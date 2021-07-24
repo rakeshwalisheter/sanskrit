@@ -67,8 +67,8 @@ class DataPreprocessor(split_counter.SplitCounter):
         ''' 
         normalization 
         '''
-#        for x in range(sc.shape[2]):
-#            sc[:,:,x]/=(np.max(sc[:,:,x]) + 1e-6)
+        #for x in range(sc.shape[2]):
+        #sc[:,:,x]/=(np.max(sc[:,:,x]) + 1e-6)
         sc/=self.splitcnts_ngram_min_maxes
         return sc
     def build_split_cnts_minmax(self):

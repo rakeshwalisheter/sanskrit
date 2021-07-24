@@ -5,6 +5,10 @@ import tensorflow as tf
 import configuration,helper_functions,data_loader
 import sys,os
 
+config = tf.compat.v1.ConfigProto()
+config.gpu_options.per_process_gpu_memory_fraction = 0.7
+tf.compat.v1.keras.backend.set_session(tf.compat.v1.Session(config=config));
+
 if len(sys.argv) < 2:
     print('At least one argument is required!')
     print(' 1st argument: path of the input text')
@@ -23,13 +27,13 @@ config = configuration.config
 with data_loader.DataLoader('../data/input', config, load_data_into_ram=False, load_data = False) as data:
     graph_pred = tf.Graph()
     with graph_pred.as_default():
-        with tf.Session(graph=graph_pred) as sess:
+        with tf.compat.v1.Session(graph=graph_pred) as sess:
             # Restore saved values
             print('\nRestoring...')
             model_dir = model_dir = os.path.normpath( os.path.join(os.getcwd(), config['model_directory']) )
-            tf.saved_model.loader.load(
+            tf.compat.v1.saved_model.loader.load(
                 sess,
-                [tf.saved_model.tag_constants.SERVING],
+                [tf.compat.v1.saved_model.tag_constants.SERVING],
                 model_dir
             )
             print('Ok')

@@ -3,7 +3,7 @@
 THIS IS THE MAIN SCRIPT!
 
 '''
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import numpy as np
 import helper_functions,data_loader,model,configuration,defines
 import sys,time,os,json,datetime,shutil
@@ -32,6 +32,10 @@ def save_model(mo, model_dir_, session):
 
 config = configuration.config
 language = 'sanskrit' #'german' # 
+tf.disable_v2_behavior() 
+gpu_config = tf.ConfigProto()
+gpu_config.gpu_options.per_process_gpu_memory_fraction = 0.7
+tf.keras.backend.set_session(tf.Session(config=gpu_config));
 
 if language=='sanskrit':
     data_directory_input = '../data/input'

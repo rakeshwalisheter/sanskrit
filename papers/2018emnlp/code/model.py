@@ -1,4 +1,4 @@
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import math
 import defines
 
@@ -7,6 +7,10 @@ class Model():
     LSTM => convolution => skip connections
     '''
     def __init__(self, config, n_input, n_classes, n_split_cnts):
+        tf.disable_v2_behavior() 
+        gpu_config = tf.ConfigProto()
+        gpu_config.gpu_options.per_process_gpu_memory_fraction = 0.7
+        tf.keras.backend.set_session(tf.Session(config=gpu_config));
         ''' Create the variables '''
         self.x = tf.placeholder(tf.int64, [None, config['max_sequence_length_sen']], name='inputs')
         '''
@@ -57,6 +61,7 @@ class Model():
                 )
         ''' B, T, 2*n_hidden '''
         return tf.concat(lstm_outputs, axis=2)
+    
     def build_cell(self, cell_type, n_hidden):
         '''
         Creates a single recurrent cell of indicated type and size.
@@ -128,6 +133,7 @@ class Model():
         B, T, u*FS
         '''
         return tf.concat(pooled_outputs, 2)
+    
     def penult_and_classification(self, rnn_outputs, config, n_classes):
         '''
         Builds the penult dense layer and creates the classification mechanism for a
@@ -197,15 +203,18 @@ class Model():
         return tf.get_variable(name, shape=[insize, outsize], dtype=tf.float32, 
                                initializer=tf.truncated_normal_initializer(0,stddev=1.0/math.sqrt(float(insize) ))
                                )
+    
     def bias(self, outsize, name, bias_init_val = 0):
         '''
         Creates a bias vector
         '''
         return tf.get_variable(name, shape=[outsize], dtype=tf.float32, initializer=tf.constant_initializer(bias_init_val))
+    
     def get_config_option(self, config, key, default_value):
         if key in config:
             return config[key]
         return default_value
+    
     def get_save_name(self):
         return 'cnn_lstm'
     
